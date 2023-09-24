@@ -41,6 +41,7 @@ namespace MonoVoxel
 
 		private bool _enabled;
 		private List<GameObject> _children;
+		private List<Component> _components;
 
 		public GameObject(string name = "GameObject")
 		{
@@ -64,6 +65,44 @@ namespace MonoVoxel
 			{
 				child.Enabled = false;
 			}
+		}
+
+		public T AddComponent<T>() where T : Component, new()
+		{
+			var component = new T();
+			component.GameObject = this;
+			component.Awake();
+			component.Start();
+			_components.Add(component);
+
+			return component;
+		}
+
+		public T GetComponent<T>() where T : Component
+		{
+			foreach (var component in _components)
+			{
+				if (component is T)
+				{
+					return component as T;
+				}
+			}
+
+			return null;
+		}
+
+		public List<T> GetComponents<T>() where T : Component
+		{
+			var list = new List<T>();
+			foreach (var component in _components)
+			{
+				if (component is T)
+				{
+					list.Add(component as T);
+				}
+			}
+
+			return list;
 		}
 	}
 }
