@@ -32,15 +32,22 @@ namespace MonoVoxel
 			}
 		}
 
-		public List<GameObject> Children
+		public Transform Transform
 		{
-			get { return _children; }
+			get
+			{
+				return _components[0] as Transform;
+			}
+		}
+
+		public List<Transform> Children
+		{
+			get { return Transform.Children; }
 		}
 
 		#endregion
 
 		private bool _enabled;
-		private List<GameObject> _children;
 		private List<Component> _components;
 
 		public GameObject(string name = "GameObject")
@@ -49,6 +56,9 @@ namespace MonoVoxel
 			Name = name;
 			Tag = string.Empty;
 			Enabled = true;
+
+			Transform transform = new Transform();
+			_components = new List<Component>() { transform };
 		}
 
 		public virtual void OnEnabled()
@@ -65,6 +75,11 @@ namespace MonoVoxel
 			{
 				child.Enabled = false;
 			}
+		}
+
+		public Transform GetChild(int index)
+		{
+			return Transform.GetChild(index);
 		}
 
 		public T AddComponent<T>() where T : Component, new()
@@ -103,6 +118,14 @@ namespace MonoVoxel
 			}
 
 			return list;
+		}
+		
+		public bool RemoveComponent(Component component)
+		{
+			if (component is Transform)
+				return false;
+			
+			return _components.Remove(component);
 		}
 	}
 }
